@@ -132,10 +132,10 @@ struct command* parse_line(char** command_line, int index) {
   my_command->pipe_entry = NULL;
 
   if(command_line == NULL) {
-    printf("No command found\n");
+    //printf("No command found\n");
     return my_command;
   } else if (command_line[index] == NULL) {
-    printf("No command found\n");
+    //printf("No command found\n");
     return my_command;
   } else {
     //Traitement de tous les cas de fonctions
@@ -266,10 +266,13 @@ void free_command(struct command* my_command) {
     free(my_command->name);
 
     int i = 0;
-    while(my_command->options[i] != NULL) {
-      free(my_command->options[i]);
-      i++;
+    if (my_command->options != NULL) {
+      while(my_command->options[i] != NULL) {
+        free(my_command->options[i]);
+        i++;
+      }
     }
+
     free(my_command->options);
 
     free(my_command->input);

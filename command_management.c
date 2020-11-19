@@ -32,11 +32,12 @@
 #define OVERWRITE 1
 #define APPEND 2
 
-
+/*
 void zombie_birth(int sig) {
+  printf("SIGNAL\n");
   wait(NULL);
 }
-
+*/
 char* run_cd (char* destination, char* curr_location, struct path my_path) {
   char* next_place = (char*) malloc(strlen(destination)+1);
   strcpy(next_place, destination);
@@ -125,8 +126,8 @@ void execution(struct command* my_command, struct path my_path) {
     strcat(strcat(name_buff, "/usr/bin/"), my_command->name);
 
     if (execve(name_buff, my_command->options, path_to_array(my_path)) == -1) {
-      printf("Could not find the command %s\n", my_command->name); //No !!
-      exit(EXIT_SUCCESS);
+      printf("Could not find the command <%s> on this computer\n", my_command->name); //No !!
+      exit(EXIT_FAILURE);
     }
     //Yes !!
   }
@@ -171,11 +172,17 @@ int* launch_command(struct command* my_command, struct path my_path) {
     exit(2);  //Just in case
   } else {
 
+    pipefd2[0] = pipefd[0];
+    pipefd2[1] = pipefd[1];
+
     while (my_command->pipe_entry != NULL) {
       my_command = my_command->pipe_entry;
 
       pids = (int*) realloc(pids, sizeof(int)*fork_count+2);
       pids[fork_count+1] = -1;
+
+      pipefd[0] = pipefd2[0];
+      pipefd[1] = pipefd2[1];
 
       int need_another_pipe = 0;
       if (my_command->pipe_entry != NULL)
@@ -208,23 +215,23 @@ int* launch_command(struct command* my_command, struct path my_path) {
         execution(my_command, my_path);
 
         exit(2);
-      } else {
-        pipefd[0] = pipefd2[0];
-        pipefd[1] = pipefd2[1];
       }
     }
   }
 
-  close(pipefd[0]);
-  close(pipefd[1]);
-  close(pipefd2[0]);
-  close(pipefd2[1]);
-
   if (my_command->bkgrd) {
-    signal(SIGCHLD, zombie_birth);
+    int i = 0;
+    while (pids[i] != -1) {
+      waitpid(pids[i], NULL, WNOHANG);
+      i++;
+    }
     return pids;
   } else {
-    wait(NULL);
+    int i = 0;
+    while (pids[i] != -1) {
+      waitpid(pids[i], NULL, 0);
+      i++;
+    }
     return NULL;
   }
 }

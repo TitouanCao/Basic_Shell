@@ -44,6 +44,7 @@ void sig_handler(int sig) {
     clear_pids_matrix(pids_matrix);
     printf("...and shut down.\n");
     free(pids_matrix);
+    free_path(my_path);
     exit(0);
   }
 
@@ -55,12 +56,16 @@ void sig_handler(int sig) {
 void clear_pids_matrix(int** pids_matrix) {
   int i = 0;
   int j = 0;
-  while(pids_matrix[i] != NULL) {
-    j = 0;
-    while(pids_matrix[i][j] != -1) {
-      if (pids_matrix[i][j] != 0)
-        kill(pids_matrix[i][j], SIGKILL);
-      j++;
+  while(i < MAX_PROC) {
+    if (pids_matrix[i] != NULL) {
+      j = 0;
+      while(pids_matrix[i][j] != -1) {
+        if (pids_matrix[i][j] != 0) {
+          kill(pids_matrix[i][j], SIGKILL);
+          printf("Killed process %i\n", pids_matrix[i][j]);
+        }
+        j++;
+      }
     }
     i++;
   }
@@ -112,6 +117,7 @@ void show_pids() {
 
 
 int main(int argc, char** argv, char**envp) {
+  signal(SIGINT, sig_handler);
 
   pids_matrix = (int**) malloc(sizeof(int*)*MAX_PROC+1);
   for (int i = 0; i < MAX_PROC; i++) {
@@ -123,13 +129,11 @@ int main(int argc, char** argv, char**envp) {
   pids_from_exec[0] = -1;
 
   my_path = create_path(envp);
-  //show_path(my_path);
+  show_path(my_path);
 
   int print_it = 0;
 
   for (;;) {
-    signal(SIGINT, sig_handler);
-
     printf("%s:%s$ ", get_env_var_value((char*)"USER", my_path), get_env_var_value((char*)"PWD", my_path));
     fflush(stdout);
     char* line = readline();
@@ -154,10 +158,10 @@ int main(int argc, char** argv, char**envp) {
           printf("[%i] : %i\n", print_it, pids_from_exec[0]);
           print_it++;
         }
+
+        free_command(my_command);
       }
     }
-
-    free_command(my_command);
 
     pids_list_counter = update_pids_matrix(pids_list_counter);
 
@@ -165,7 +169,6 @@ int main(int argc, char** argv, char**envp) {
 
     free(words);
     free(line);
-    free_path(my_path);
   }
   return 0;
 }
