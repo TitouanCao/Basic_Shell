@@ -141,6 +141,11 @@ struct command* parse_line(char** command_line, int index) {
     //Traitement de tous les cas de fonctions
     to_uppercase(command_line[index]);
 
+    if (!strcmp(command_line[index], "QUIT")) {    //Cas sortie
+      my_command->name = (char*) malloc(strlen("quit")+1);
+      strcpy(my_command->name, "quit");
+    }
+
     if (!strcmp(command_line[index], "PWD")) {    //Cas PWD
       my_command->name = (char*) malloc(strlen("pwd")+1);
       strcpy(my_command->name, "pwd");

@@ -33,6 +33,15 @@ struct path my_path;
 
 void clear_pids_matrix(int** pids_matrix);
 
+void shut_down() {
+  printf("Clearing opened processes...\n");
+  clear_pids_matrix(pids_matrix);
+  printf("...and shut down.\n");
+  free(pids_matrix);
+  free_path(my_path);
+  exit(0);
+}
+
 void sig_handler(int sig) {
   signal(SIGINT, sig_handler);
   printf("\nWant to quit ? [ENTER/y]");
@@ -40,12 +49,7 @@ void sig_handler(int sig) {
   char* ans = readline();
 
   if (ans[0] == 'y' || ans[0] == '\0') {
-    printf("Clearing opened processes...\n");
-    clear_pids_matrix(pids_matrix);
-    printf("...and shut down.\n");
-    free(pids_matrix);
-    free_path(my_path);
-    exit(0);
+    shut_down();
   }
 
   printf("Poursuing execution...\n");
@@ -114,8 +118,6 @@ void show_pids() {
   }
 }
 
-
-
 int main(int argc, char** argv, char**envp) {
   signal(SIGINT, sig_handler);
 
@@ -142,12 +144,20 @@ int main(int argc, char** argv, char**envp) {
     struct command* my_command = parse_line(words, 0);
 
     if (nbr_of_alive_pids_in_matrix(pids_matrix, MAX_PROC) >= MAX_PROC) {
-      printf("Cannot load more processes, please wait or kill this processus\n");
+      printf("Cannot load more processes (%i), please wait or kill this processus\n", MAX_PROC);
     } else {
       if (my_command->valid) {
 
         int* pids_from_exec = parser(my_command, my_path);
+
         if (pids_from_exec != NULL) {
+
+          if (pids_from_exec[0] == -2) {  //Quit
+            free_command(my_command);
+            free(words);
+            free(line);
+            shut_down();
+          }
 
           int i = 0;
           while(pids_matrix[i] != NULL)

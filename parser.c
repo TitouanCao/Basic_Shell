@@ -30,6 +30,7 @@
 #endif
 
 //Internal command list
+#define QUIT "quit"
 #define CD "cd"
 #define PWD "pwd"
 #define SET "set"
@@ -38,7 +39,9 @@
 
 int command_parser (struct command* my_command) {
   //Accepted commands
-  if (!strcmp(my_command->name, CD)) {
+  if (!strcmp(my_command->name, QUIT))  {
+    return -1;
+  } else if (!strcmp(my_command->name, CD)) {
     return 1;
   } else if (!strcmp(my_command->name, PWD)) {
     return 2;
@@ -55,7 +58,13 @@ int* parser (struct command* my_command, struct path my_path) {
   char* ptr1;
   char* ptr2;
   int int1;
+  int* int2;
   switch (command_parser(my_command)) {
+    case -1:
+    int2 = (int*) malloc(sizeof(int));
+      *int2 = -2;
+      return int2;
+      break;
     case 1:
       ptr1 = get_env_var_value((char*)"PWD", my_path);
       int1 = strlen(ptr1) + 1;
