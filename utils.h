@@ -1,0 +1,12 @@
+char* cut_string_from_tip (char* string, char delim);
+char* to_uppercase(char* string);
+char* to_lowercase(char* string);
+int is_valid_file_name(char* fd);
+int is_valid_path_var(char* var);
+int is_valid_pwd(char* filename);
+int pids_tab_len(int* pids);
+int pids_matrix_len(int** pids);
+int nbr_of_alive_pids_in_tab(int* pids);
+int nbr_of_alive_pids_in_matrix(int** pids, int max_i);
+int erase_pid_from_matrix(int** pids, int pid);
+void add_pid_to_pids_table(int* pids, int pid);
