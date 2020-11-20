@@ -6,9 +6,9 @@
 
 #include "readline.c"
 
-#ifndef PATH_H
-#define PATH_H _
-  #include "path.h"
+#ifndef environment_H
+#define environment_H _
+  #include "environment.h"
 #endif
 
 #ifndef COMMAND_H
@@ -29,7 +29,7 @@
 #define MAX_PROC 5
 
 int** pids_matrix;
-struct path my_path;
+struct environment my_environment;
 
 void clear_pids_matrix(int** pids_matrix);
 
@@ -38,7 +38,7 @@ void shut_down() {
   clear_pids_matrix(pids_matrix);
   printf("...and shut down.\n");
   free(pids_matrix);
-  free_path(my_path);
+  free_environment(my_environment);
   exit(0);
 }
 
@@ -52,8 +52,8 @@ void sig_handler(int sig) {
     shut_down();
   }
 
-  printf("Poursuing execution...\n");
-  printf("%s:%s$ ", get_env_var_value((char*)"USER", my_path), get_env_var_value((char*)"PWD", my_path));
+  printf("Pursuing execution...\n");
+  printf("%s:%s$ ", get_env_var_value((char*)"USER", my_environment), get_env_var_value((char*)"PWD", my_environment));
   fflush(stdout);
 }
 
@@ -130,13 +130,13 @@ int main(int argc, char** argv, char**envp) {
   int* pids_from_exec = (int*) malloc(sizeof(int));
   pids_from_exec[0] = -1;
 
-  my_path = create_path(envp);
-  show_path(my_path);
+  my_environment = create_environment(envp);
+  show_environment(my_environment);
 
   int print_it = 0;
 
   for (;;) {
-    printf("%s:%s$ ", get_env_var_value((char*)"USER", my_path), get_env_var_value((char*)"PWD", my_path));
+    printf("%s:%s$ ", get_env_var_value((char*)"USER", my_environment), get_env_var_value((char*)"PWD", my_environment));
     fflush(stdout);
     char* line = readline();
 
@@ -148,7 +148,7 @@ int main(int argc, char** argv, char**envp) {
     } else {
       if (my_command->valid) {
 
-        int* pids_from_exec = parser(my_command, my_path);
+        int* pids_from_exec = parser(my_command, my_environment);
 
         if (pids_from_exec != NULL) {
 

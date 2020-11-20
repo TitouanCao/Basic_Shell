@@ -2,7 +2,7 @@ char* cut_string_from_tip (char* string, char delim);
 char* to_uppercase(char* string);
 char* to_lowercase(char* string);
 int is_valid_file_name(char* fd);
-int is_valid_path_var(char* var);
+int is_valid_environment_var(char* var);
 int is_valid_pwd(char* filename);
 int pids_tab_len(int* pids);
 int pids_matrix_len(int** pids);

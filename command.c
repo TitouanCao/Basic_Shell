@@ -17,7 +17,7 @@
 int manage_redirection(struct command* my_command, char** command_line, int index, int j) {
   if (command_line[index] != NULL) {
     if (!strcmp(command_line[index], ">") || !strcmp(command_line[index], "<")) {
-      return 1;
+      return 0;
     }
     if (command_line[index] != NULL && command_line[index+1] != NULL) {
       //Case there are no redirection
@@ -28,16 +28,16 @@ int manage_redirection(struct command* my_command, char** command_line, int inde
       int ftype = 0;
       if (command_line[index+2] == NULL) {
         printf("Incorrect command format - missing file\n");
-        return 1;
+        return -1;
       }
 
       if (!strcmp(command_line[index+1], ">") && ! strcmp(command_line[index+2], ">")) {
         if (command_line[index+3] == NULL) {
           printf("Incorrect command format - missing file\n");
-          return 1;
+          return -1;
         } else if (!is_valid_file_name(command_line[index+3])) {
           printf("Incorrect command format - incorrect file\n");
-          return 1;
+          return -1;
         }
         ftype = 2;
       }
@@ -99,10 +99,10 @@ int manage_redirection(struct command* my_command, char** command_line, int inde
           my_command->input = (char*) malloc(strlen(command_line[index+2]) + 1);
           strcpy(my_command->input, command_line[index+2]);
         }
-        return 2;
+        return 1;
       } else {
         printf("Incorrect command format - missing file\n");
-        return 1;
+        return -1;
       }
     }
     return 0;
@@ -155,11 +155,7 @@ struct command* parse_line(char** command_line, int index) {
       my_command->name = (char*) malloc(strlen("print")+1);
       strcpy(my_command->name, "print");
 
-      if (command_line[1] == NULL) {
-        printf("Missing arguments\n");
-        return my_command;
-      }
-      else {
+      if (command_line[1] != NULL) {
         my_command->options = (char**) malloc(sizeof(char*));
         my_command->options[0] = (char*) malloc(strlen(command_line[1])+1);
         my_command->options[1] =  NULL;
@@ -225,7 +221,7 @@ struct command* parse_line(char** command_line, int index) {
 
       i = index;
       while(command_line[i] != NULL) {
-        if (!strcmp(command_line[i], "|") || !strcmp(command_line[i], ">") || !strcmp(command_line[i], ">>") || !strcmp(command_line[i], "<")) {
+        if (!strcmp(command_line[i], "|")) {
           j++;
           i++;
           break;
@@ -245,21 +241,33 @@ struct command* parse_line(char** command_line, int index) {
 
       my_command->options = (char**) malloc(sizeof(char*)*len);
 
+      int r = 0;
+      int k = 0;  //There is a redirection or not
       while(j < len) {
 
-        int r = manage_redirection(my_command, command_line, i, j);
-        if (r==1) break;
+        if (r == 0) {
+          r = manage_redirection(my_command, command_line, i, j);
+          if (r == 1)
+            k = j+1;
+        }
+
+        if (r==-1) break;
         if (manage_pipe(my_command, command_line, i))
           break;
 
-        if (r==0||r==2) {
+        if (r==0||r==1) {
           my_command->options[j] = (char*) malloc(strlen(command_line[i])+1);
           strcpy(my_command->options[j], command_line[i]);
-          i++;
-          j++;
+          if (r==1)
+            r=2;  //Stop filling options
         }
+        i++;
+        j++;
       }
-      my_command->options[j] = NULL;
+      if (k != 0)
+        my_command->options[k] = NULL;
+      else
+        my_command->options[j] = NULL;
     }
   }
   my_command->valid = 1;

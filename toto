@@ -1,0 +1,18 @@
+合計 125
+-rwxrwxrwx 1 cao cao   634 nov.  20 16:29 Makefile
+-rwxrwxrwx 1 cao cao   305 nov.  19 18:30 README.md
+-rwxrwxrwx 1 cao cao  8525 nov.  20 16:24 command.c
+-rwxrwxrwx 1 cao cao   378 nov.  19 18:02 command.h
+-rwxrwxrwx 1 cao cao  6760 nov.  20 19:31 command_management.c
+-rwxrwxrwx 1 cao cao   209 nov.  20 17:58 command_management.h
+-rwxrwxrwx 1 cao cao  4633 nov.  20 16:29 environment.c
+-rwxrwxrwx 1 cao cao   554 nov.  20 16:26 environment.h
+-rwxrwxrwx 1 cao cao  2765 nov.  20 16:29 parser.c
+-rwxrwxrwx 1 cao cao   126 nov.  20 16:27 parser.h
+-rwxrwxrwx 1 cao cao 17368 oct.  16 13:57 readline
+-rwxrwxrwx 1 cao cao  2132 nov.  19 20:55 readline.c
+-rwxrwxrwx 1 cao cao 54056 nov.  20 19:31 shell
+-rwxrwxrwx 1 cao cao  3971 nov.  20 16:27 shell.c
+-rwxrwxrwx 1 cao cao     0 nov.  20 19:41 toto
+-rwxrwxrwx 1 cao cao  2955 nov.  20 16:27 utils.c
+-rwxrwxrwx 1 cao cao   486 nov.  20 16:26 utils.h

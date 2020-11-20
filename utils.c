@@ -41,7 +41,7 @@ int is_valid_file_name(char* fd) {
     return 1;
 }
 
-int is_valid_path_var(char* var) {
+int is_valid_environment_var(char* var) {
   int len = strlen(var)+1;
   for (int i = 0; i < len; i++) {
     if (var[i] == ' ' || var[i] == '\t' || var[i] == '<' || var[i] == '>' || var[i] == '|' || var[i] == '=')
