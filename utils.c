@@ -17,18 +17,23 @@ char* cut_string_from_tip (char* string, char delim) {
     if (i < 0) return NULL;
   }
   my_string[i] = '\0';
+  free(string);
   return my_string;
 }
 
 char* to_uppercase(char* string) {
-  for (int i = 0; i < (int)strlen(string); i++)
-    string[i] = toupper(string[i]);
+  for (int i = 0; i < (int)strlen(string); i++) {
+    if (isalpha(string[i]))
+      string[i] = toupper(string[i]);
+  }
   return string;
 }
 
 char* to_lowercase(char* string) {
-  for (int i = 0; i < (int)strlen(string); i++)
-    string[i] = tolower(string[i]);
+  for (int i = 0; i < (int)strlen(string); i++){
+    if (isalpha(string[i]))
+      string[i] = tolower(string[i]);
+  }
   return string;
 }
 
@@ -127,15 +132,11 @@ void add_pid_to_pids_table(int* pids, int pid) {
   while (pids[i] != -1) {
     if (pids[i] == 0) {
       pids[i] = pid;
-      printf("I set pids[%i] = %i\n", i, pids[i]);
       return;
     }
-    printf("Loop, not -1 : pids[%i] = %i\n", i, pids[i]);
     i++;
   }
-  printf("Loop, -1 : pids[%i] = %i\n", i, pids[i]);
   if (i == 0) {
-    printf("First pid\n");
     pids = (int*) realloc(pids, sizeof(int)*2);
     pids[0] = pid;
     pids[1] = -1;
@@ -143,7 +144,5 @@ void add_pid_to_pids_table(int* pids, int pid) {
     pids = (int*) realloc(pids, sizeof(int)*i+2);
     pids[i+1] = -1;
     pids[i] = pid;
-    printf("II set pids[%i] = %i\n", i, pids[i]);
-    printf("II set pids[%i] = %i\n", i+1, pids[i+1]);
   }
 }
