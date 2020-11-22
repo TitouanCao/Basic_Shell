@@ -131,7 +131,6 @@ int update_pids_matrix(int list_len) {
           alive = 0;
         else
           alive = 1;
-        printf("%i is %i\n", pids_matrix[i][j], alive);
         if (pids_matrix[i][j] != 0 && !alive) {
           pids_matrix[i][j] = 0;
           if (nbr_of_alive_pids_in_tab(pids_matrix[i]) == 0) {
@@ -198,6 +197,7 @@ int main(int argc, char** argv, char**envp) {
     parser(init_command, my_environment);
   free(init_command);
 
+
   for (;;) {
     //Shows the user and the current location before every command (exept background ones)
     display_start_line();
@@ -242,7 +242,7 @@ int main(int argc, char** argv, char**envp) {
       }
     }
 
-    show_pids();
+    //show_pids();  //Just for debugging
 
     free_command(my_command); //Liberate the memory allocated to the command structure
 
