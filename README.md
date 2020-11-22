@@ -1,6 +1,11 @@
 # Basic_Shell
 A very basic implementation of Shell for Linux, with simple functionalities.
 ___
+## Known issues
+- When launched in an **environment where it does not have all rights** (so please try to use it in a sweet environment), this Shell can encounter issues opening files or invoking certain commands. This might lead to uncaught segmentation faults which would sadly need more developing time to fix. For example the command `cat > toto` when file toto does not exist yet, will fail because of permissions missing, even with set permissions during `open`, so we have to use `touch` before.
+- The virtual representation of background running processes pids is currently not updating correctly as a dead and reaped (by waitpid, so no zombies in reality) process wont be erased from the matrix, leading the programm to rapidly reach its maximum amount of simultaneaously running children.
+- `quit` being a command, when you reach the maximum amount of processes, you cannot even quit the execution.
+___
 ## Start
 After opening a terminal in the directory the Makefile is, symply typing `make` should build all the executables.<br/>
 Once the executables are built you can execute the main with `./shell`.
@@ -9,7 +14,7 @@ ___
 *Commands's name are not case-sensitive, but values are.<br/>
 There are no Shell interpretation of wildcards.*
 ### Internal commands
-`pwd` displays the current pwd from the path variables. <br/>
+`pwd` displays the current dirname from the path variables. <br/>
 `cd <location>` moves the pwd to the given location if it exists in the filesystem. Special entries accepted: 
 - `..` returns to the previous directory.
 - `~` returns to the home directory.
@@ -24,16 +29,17 @@ Handles `Ctrl+c` signal.
 Can handle any command which executable file is located somewhere in the computer which filepath is located in path variable.
 
 ### Pipes
-With the character `|` you can combine commands. The command on the left side will send its result to the command on the right side. There are no limit to the amount of commands you can combine. In case a left command has already an output redirection, the redirection has the priority and the next command wont be executed.
+With the character `|` you can combine commands. The command on the left side will send its result to the command on the right side. There are no limit to the amount of commands you can combine. In case a left command has already an output redirection, the **redirection has the priority** and the next command will connect back to the keyboard as input. In case a right command has already an input, the redirection still has the priority. 
 
 ### Redirections
-With the character `>` you can set the output for the given command. The writing will overwrite the previous content. <br/>   
+With the character `>` you can set the output for the given command. The writing will overwrite the previous content.<br/>
 With the characters `>>` you can set the output for the given command. The writing will append at the end of the previous content. <br/>
-With the caracter `<` you can set the input for the given command.
+With the caracter `<` you can set the input for the given command. <br/>
+When they are multpiples similar redirections the later one has the priority. They are no limit to the amount of redirections but only the latest of each type (read/write) will be taken into account.
 
 ### Background commands
 Commands can be launched in background with the character `&` at the end of the line. <br/>
-A maximum of 5 processes can run in background simultaneously, once this limit reached you cannot launch anymore background commands and must wait a process to terminate. <br/>
+A maximum of 5 (random choice) processes can run in background simultaneously, once this limit reached you cannot launch anymore background commands and must wait a process to terminate. <br/>
 When killing the Shell all background processes will also be killed.
 
 ___
@@ -46,3 +52,4 @@ ___
 `Parser`receive a `struct command*` and forward it to the right treatment with some adjustments if necessary. It is very light considering `Command` already check most of error cases and values relevence if checked in later functions.<br/>
 `Command_management` implements internal functions and calls external commands. It handles pipe and redirection processing.<br/>
 `Utils` proposes come useful functions, although most of them are not used in current implementation.<br/>
+
