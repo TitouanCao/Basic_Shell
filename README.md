@@ -38,6 +38,7 @@ When killing the Shell all background processes will also be killed.
 
 ___
 ## Files
+`ansi_colors.h` content comes from RabaDabaDoba's repository https://gist.github.com/RabaDabaDoba/145049536f815903c79944599c6f952a <br/>
 `Readline` is provided by professor Olivier Gruber. <br/>
 `Shell` contains the main and manages processes to limit them and kill them when necessary.<br/>
 `Environment` implements a structure to handle environment variables and functions to access them more easily.<br/>
